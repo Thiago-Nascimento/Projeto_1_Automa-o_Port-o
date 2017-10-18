@@ -16,28 +16,30 @@ void loop()
   estadoconexao = Serial.read();
   Serial.print(estadoconexao);
   
-  if(estadoconexao =='r')
-  {
+  switch (estadoconexao){
+    case 'r': {
       digitalWrite(ledVerde,LOW);
       digitalWrite(ledAmarelo,LOW);
       digitalWrite(ledVermelho,HIGH); //sistema desconectado
       delay(100);
   	  digitalWrite(ledVermelho,LOW);
       delay(100);
+      break;
     }
-  else if(estadoconexao =='y')
-  {
+    case 'y':  {
       digitalWrite(ledVermelho,LOW);
       digitalWrite(ledVerde,LOW);
       digitalWrite(ledAmarelo,HIGH); //sistema em conexão
       delay(100);
   	  digitalWrite(ledAmarelo,LOW);
       delay(100);
+      break;
   }
-  else if(estadoconexao =='g')
-  {
+  case 'g':{
     digitalWrite(ledVermelho,LOW);  //sistema conectado
     digitalWrite(ledAmarelo,LOW);
     digitalWrite(ledVerde,HIGH);
+    break;
   }
+}
 }
