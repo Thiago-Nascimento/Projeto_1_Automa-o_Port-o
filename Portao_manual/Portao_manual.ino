@@ -32,6 +32,7 @@ void loop()
     Serial.println(estadoBotao);
     Serial.println("Ultimo estado do botao: "); 
     Serial.println(ultimoEstadoBotao);
+    Serial.println("Aberto...");
     Serial.println(pos);
     ultimoEstadoBotao = 0;
     delay(200);
@@ -50,7 +51,7 @@ void loop()
     Serial.println(estadoBotao);
     Serial.println("Ultimo estado do botao: "); 
     Serial.println(ultimoEstadoBotao);
-    Serial.println("Segundo bloco: ");
+    Serial.println("Fechado...");
     Serial.println(pos);
     ultimoEstadoBotao = 1;
     delay(200);
