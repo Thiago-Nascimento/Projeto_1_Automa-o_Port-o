@@ -23,7 +23,7 @@ void loop()
     
   if(estadoBotao == LOW && ultimoEstadoBotao == 1)
   {
-    for (pos = 0; pos <= 90; pos += 1) 
+    for (pos = 0; pos <= 89; pos += 1) 
     { 
       portao.write(pos);
       delay(15);                      
@@ -32,7 +32,7 @@ void loop()
     Serial.println(estadoBotao);
     Serial.println("Ultimo estado do botao: "); 
     Serial.println(ultimoEstadoBotao);
-    Serial.println("Aberto...");
+    Serial.println("Portão Aberto...");
     Serial.println(pos);
     ultimoEstadoBotao = 0;
     delay(200);
@@ -42,7 +42,7 @@ void loop()
   
   if(estadoBotao == LOW && ultimoEstadoBotao == 0)  
   {
-    for (pos = 90; pos >= 0; pos -= 1) 
+    for (pos = 90; pos >= 1; pos -= 1) 
     {
       portao.write(pos);              
       delay(15);                      
@@ -51,7 +51,7 @@ void loop()
     Serial.println(estadoBotao);
     Serial.println("Ultimo estado do botao: "); 
     Serial.println(ultimoEstadoBotao);
-    Serial.println("Fechado...");
+    Serial.println("Portão Fechado...");
     Serial.println(pos);
     ultimoEstadoBotao = 1;
     delay(200);
