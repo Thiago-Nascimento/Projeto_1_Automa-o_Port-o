@@ -17,44 +17,44 @@ void setup()
   ultimoEstadoBotao = 1;
 }
 
+void abrePortao()
+{
+  for (pos = 0; pos <= 89; pos += 1) 
+    { 
+      portao.write(pos);
+      delay(15);                      
+    }
+    Serial.println("Portão Aberto...");
+    ultimoEstadoBotao = 0;
+    delay(200); 
+}
+
+void fechaPortao()
+{
+  for (pos = 90; pos >= 1; pos -= 1) 
+  {
+    portao.write(pos);              
+    delay(15);                      
+  }
+  Serial.println("Portão Fechado...");
+  ultimoEstadoBotao = 1;
+  delay(200); 
+}
+
 void loop()
 {
   estadoBotao = digitalRead(pinoBotao);
     
   if(estadoBotao == LOW && ultimoEstadoBotao == 1)
   {
-    for (pos = 0; pos <= 89; pos += 1) 
-    { 
-      portao.write(pos);
-      delay(15);                      
-    }
-    Serial.println("Estado Botao: ");
-    Serial.println(estadoBotao);
-    Serial.println("Ultimo estado do botao: "); 
-    Serial.println(ultimoEstadoBotao);
-    Serial.println("Portão Aberto...");
-    Serial.println(pos);
-    ultimoEstadoBotao = 0;
-    delay(200);
+    abrePortao();
   }
 
   estadoBotao = digitalRead(pinoBotao);
   
   if(estadoBotao == LOW && ultimoEstadoBotao == 0)  
   {
-    for (pos = 90; pos >= 1; pos -= 1) 
-    {
-      portao.write(pos);              
-      delay(15);                      
-    }
-    Serial.println("Estado Botao: ");
-    Serial.println(estadoBotao);
-    Serial.println("Ultimo estado do botao: "); 
-    Serial.println(ultimoEstadoBotao);
-    Serial.println("Portão Fechado...");
-    Serial.println(pos);
-    ultimoEstadoBotao = 1;
-    delay(200);
+    fechaPortao();
   }
 }
 
