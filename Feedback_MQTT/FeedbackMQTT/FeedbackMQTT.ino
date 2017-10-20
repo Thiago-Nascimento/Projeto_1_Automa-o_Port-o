@@ -49,6 +49,8 @@ int buzz = 5;
       break;
     }
      case 'e':{
+        digitalWrite(ledVermelho,LOW);
+        digitalWrite(ledAmarelo,LOW);
         digitalWrite(ledVerde,LOW);
         delay (50);
         digitalWrite(ledVerde,HIGH);
@@ -60,6 +62,8 @@ int buzz = 5;
         break;
         }
      case 'd':{
+        digitalWrite(ledVermelho,LOW);
+        digitalWrite(ledAmarelo,LOW);
           tone (buzz, 500);
           delay (50);
           noTone(buzz);
@@ -121,7 +125,7 @@ void setup()
     
     Serial.println("Conectado MQTT");
     
-    
+    }
   }else{
     Serial.println("erro ao conectar"); 
     delay(50); 
@@ -129,7 +133,7 @@ void setup()
   }
   
 }
-}
+
 void loop()
 {
   client.loop();
