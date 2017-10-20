@@ -43,56 +43,36 @@ int buzz = 5;
       
   
     case 'g':{
-    digitalWrite(ledVermelho,LOW);  //sistema conectado
-    digitalWrite(ledAmarelo,LOW);
-    digitalWrite(ledVerde,HIGH);
-    while (estadoconexao == 'g'){
-      
-        if(Serial.available() > 0){
-      estadoconexao = Serial.read();
-      
-
-      if (estadoconexao == 'e'){
-        digitalWrite(ledVerde,LOW);
-        delay (50);
-        digitalWrite(ledVerde,HIGH);
-        delay (50);
-        digitalWrite(ledVerde,LOW);
-        delay (50);
-        digitalWrite(ledVerde,HIGH);
-        delay (50);
-        estadoconexao = 'g';
-      }
-      else if (estadoconexao == 'd'){
-          tone (buzz, 500);
-          delay (50);
-          noTone(buzz);
-          delay (50);
-          tone (buzz, 500);
-          delay (50);
-          noTone(buzz);
-          estadoconexao = 'g';
-      }
-      else if (estadoconexao == 'y'){
-        digitalWrite(ledVerde,LOW);
-        digitalWrite(ledAmarelo,HIGH);
-        delay(100);
-        digitalWrite(ledAmarelo,LOW);
-      break;}
-      
-      else if (estadoconexao == 'r'){
-        digitalWrite(ledVerde,LOW);
-        digitalWrite(ledVermelho,HIGH);
-        delay(100);
-        digitalWrite(ledVermelho,LOW);
-      break;}
-        }
+      digitalWrite(ledVermelho,LOW);  //sistema conectado
+      digitalWrite(ledAmarelo,LOW);
+      digitalWrite(ledVerde,HIGH);
+      break;
     }
-    break;
-       
+     case 'e':{
+        digitalWrite(ledVerde,LOW);
+        delay (50);
+        digitalWrite(ledVerde,HIGH);
+        delay (50);
+        digitalWrite(ledVerde,LOW);
+        delay (50);
+        digitalWrite(ledVerde,HIGH);
+        delay (50);
+        break;
+        }
+     case 'd':{
+          tone (buzz, 500);
+          delay (50);
+          noTone(buzz);
+          delay (50);
+          tone (buzz, 500);
+          delay (50);
+          noTone(buzz);
+          break;
+          }
+
   }
 }
-}
+
 
 
 // Update these with values suitable for your network.
@@ -132,19 +112,31 @@ void setup()
   {
     // Envia uma mensagem para o cloud no topic portao
     client.publish("teste", "1");
+    feedback('e');
 
     // Conecta no topic para receber mensagens
-    client.subscribe("portao");
-    client.subscribe("lampada");
+    if(client.subscribe("teste")==1){
+    feedback('g');
+    feedback('d');
     
-    Serial.println("conectado Temperatura");
+    Serial.println("Conectado MQTT");
+    
+    
   }else{
-    Serial.println("erro ao conectar");  
+    Serial.println("erro ao conectar"); 
+    delay(50); 
+    feedback('r');
   }
   
 }
-
+}
 void loop()
 {
   client.loop();
+  client.publish("mensagem","2");
+  if (client.subscribe("mensagem")== 2){
+      feedback('d');
+      Serial.println("Recebido");
+      }
+
 }
