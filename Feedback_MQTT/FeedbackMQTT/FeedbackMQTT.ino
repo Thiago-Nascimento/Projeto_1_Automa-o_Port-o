@@ -153,19 +153,15 @@ void callback(char* topic, byte* payload, unsigned int length)
   delay(100);
   feedback('d');
 
-//
-ultimoEstadoBotao = 1;
-estadoBotao = digitalRead(pinoBotao);
+
 if(msgRecebida == "abre" && ultimoEstadoBotao == 1)
   {
     abrePortao();
     acendeLampada();
     Serial.println("");
   }
-
-  estadoBotao = digitalRead(pinoBotao);
-  
-  if(msgRecebida == "abre" && ultimoEstadoBotao == 0)  
+ 
+  else if(msgRecebida == "abre" && ultimoEstadoBotao == 0)  
   {
     fechaPortao();
     apagaLampada();
@@ -179,6 +175,7 @@ if(msgRecebida == "abre" && ultimoEstadoBotao == 1)
 
 void setup()
 {
+  ultimoEstadoBotao = 1;
   Serial.begin(9600);
   Serial.println("Iniciando...");
   Ethernet.begin(mac);
@@ -189,8 +186,7 @@ void setup()
   {
     // Envia uma mensagem para o cloud no topic portao
     client.publish("teste", "v");
-    feedback('g');
-    
+        
 
     // Conecta no topic para receber mensagens
   client.subscribe("mensagem");
@@ -198,6 +194,7 @@ void setup()
 //   
   Serial.println("Conectado MQTT");
   delay(50);
+  feedback('g');
     
   }else{
     Serial.println("erro ao conectar"); 
