@@ -7,11 +7,13 @@
 
 Servo portao;  
 
-int pos = 0; 
+int pos=0;
 const int pinoBotao = 4;
 const int lampada =  3;
 int estadoBotao = 0;
 int ultimoEstadoBotao;
+
+long lastReconnectAttempt = 0;
 
 //função feedback
 void acendeLed(int ledAceso,int ledApagado1, int ledApagado2)
@@ -119,30 +121,38 @@ PubSubClient client("m11.cloudmqtt.com", 11084, callback, ethClient);
 
 void abrePortao()
 {
-  for (pos = 0; pos <= 89; pos += 1) 
+  for (int pos = 0; pos <= 90; pos += 1) 
   { 
     portao.write(pos);
     delay(15);                      
   }
+  pos=90;
   Serial.println("Portão Aberto...");
   client.publish("enviado","Portão aberto");
   client.publish("enviado","Lâmpada acesa");
+  if (client.connect("arduino", "arduino", "ard123"))
+  {
   feedback('e');
+  }
   ultimoEstadoBotao = 0;
   delay(200); 
 }
 
 void fechaPortao()
 {
-  for (pos = 90; pos >= 1; pos -= 1) 
+  for (int pos = 90; pos >= 0; pos -= 1) 
   {
     portao.write(pos);              
     delay(15);                      
   }
+  pos=90;
   Serial.println("Portão Fechado...");
   client.publish("enviado","Portão fechado");
   client.publish("enviado","Lâmpada apagada");
+  if (client.connect("arduino", "arduino", "ard123"))
+  {
   feedback('e');
+  }
   ultimoEstadoBotao = 1;
   delay(200); 
 }
@@ -179,13 +189,29 @@ if(msgRecebida == "abre" && ultimoEstadoBotao == 1)
   free(p);
 }
 
+boolean reconnect() {
+  if (client.connect("arduino", "arduino", "ard123")) {
+    // Once connected, publish an announcement...
+    client.publish("teste","hello world");
+    // ... and resubscribe
+    client.subscribe("recebido");
+  }
+  feedback('g');
+  Serial.println("Conectado MQTT");
+  return client.connected();
+  }
+
 void setup()
 {
+  lastReconnectAttempt = 0;
+  
   ultimoEstadoBotao = 1;
   Serial.begin(9600);
   Serial.println("Iniciando...");
-  Ethernet.begin(mac);
+  delay(50);
   feedback('y');
+  Ethernet.begin(mac);
+  
 
   // Faz a conexão no cloud com nome do dispositivo, usuário e senha respectivamente
   if (client.connect("arduino", "arduino", "ard123"))
@@ -220,9 +246,22 @@ void setup()
 }
 
 void loop()
-{
+{  if (!client.connected()) {
+    long now = millis();
+    feedback('r');
+    if (now - lastReconnectAttempt > 5000) {
+      lastReconnectAttempt = now;
+      // Attempt to reconnect
+      feedback('y');
+      Serial.println("Reconectando...");
+      if (reconnect()) {
+        lastReconnectAttempt = 0;
+      }
+    }
+  } else {
+    // Client connected
   client.loop();
-
+  
 //abir e fechar portão com botão
   estadoBotao = digitalRead(pinoBotao);
     
@@ -241,4 +280,5 @@ void loop()
     apagaLampada();
     Serial.println("");
   }
+}
 }
