@@ -14,6 +14,13 @@ int estadoBotao = 0;
 int ultimoEstadoBotao;
 
 //função feedback
+void acendeLed(int ledAceso,int ledApagado1, int ledApagado2)
+{
+  digitalWrite(ledApagado2,LOW);
+  digitalWrite(ledApagado1,LOW);
+  digitalWrite(ledAceso,HIGH); 
+  }
+
 void feedback(char msg)
 {
 
@@ -34,26 +41,18 @@ int buzz = 5;
    
   switch (estadoconexao){
     case 'r': {
-      digitalWrite(ledVerde,LOW);
-      digitalWrite(ledAmarelo,LOW);
-      digitalWrite(ledVermelho,HIGH); //sistema desconectado
-      delay(100);
-      digitalWrite(ledVermelho,LOW);
+      acendeLed(ledVermelho,ledVerde, ledAmarelo); //sistema desconectado
       delay(100);
       break;
     }
     case 'y':  {
-      digitalWrite(ledVermelho,LOW);
-      digitalWrite(ledVerde,LOW);
-      digitalWrite(ledAmarelo,HIGH); //sistema em conexÃ£o
+      acendeLed(ledAmarelo,ledVermelho,ledVerde);  //sistema em conexÃ£o
       break;
       }
       
   
     case 'g':{
-      digitalWrite(ledVermelho,LOW);  //sistema conectado
-      digitalWrite(ledAmarelo,LOW);
-      digitalWrite(ledVerde,HIGH);
+      acendeLed(ledVerde,ledAmarelo,ledVermelho);
       break;
     }
      case 'e':{
@@ -101,29 +100,7 @@ void apagaLampada()
   delay(215);  
 }
 
-void abrePortao()
-{
-  for (pos = 0; pos <= 89; pos += 1) 
-  { 
-    portao.write(pos);
-    delay(15);                      
-  }
-  Serial.println("Portão Aberto...");
-  ultimoEstadoBotao = 0;
-  delay(200); 
-}
 
-void fechaPortao()
-{
-  for (pos = 90; pos >= 1; pos -= 1) 
-  {
-    portao.write(pos);              
-    delay(15);                      
-  }
-  Serial.println("Portão Fechado...");
-  ultimoEstadoBotao = 1;
-  delay(200); 
-}
 
 
 char payload = 0;
@@ -140,6 +117,35 @@ EthernetClient ethClient;
 // Dados do MQTT Cloud
 PubSubClient client("m11.cloudmqtt.com", 11084, callback, ethClient);
 
+void abrePortao()
+{
+  for (pos = 0; pos <= 89; pos += 1) 
+  { 
+    portao.write(pos);
+    delay(15);                      
+  }
+  Serial.println("Portão Aberto...");
+  client.publish("enviado","Portão aberto");
+  client.publish("enviado","Lâmpada acesa");
+  feedback('e');
+  ultimoEstadoBotao = 0;
+  delay(200); 
+}
+
+void fechaPortao()
+{
+  for (pos = 90; pos >= 1; pos -= 1) 
+  {
+    portao.write(pos);              
+    delay(15);                      
+  }
+  Serial.println("Portão Fechado...");
+  client.publish("enviado","Portão fechado");
+  client.publish("enviado","Lâmpada apagada");
+  feedback('e');
+  ultimoEstadoBotao = 1;
+  delay(200); 
+}
 // Funcçao que irá receber o retorno do servidor.
 void callback(char* topic, byte* payload, unsigned int length)
 {
@@ -159,7 +165,7 @@ if(msgRecebida == "abre" && ultimoEstadoBotao == 1)
     abrePortao();
     acendeLampada();
     Serial.println("");
-  }
+    }
  
   else if(msgRecebida == "abre" && ultimoEstadoBotao == 0)  
   {
@@ -189,7 +195,7 @@ void setup()
         
 
     // Conecta no topic para receber mensagens
-  client.subscribe("mensagem");
+  client.subscribe("recebido");
   
 //   
   Serial.println("Conectado MQTT");
